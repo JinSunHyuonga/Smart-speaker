@@ -2,7 +2,7 @@
 <root>
    <ApplicationSettings
            option_a = "10"
-           option_b = "안녕하세요"
+           option_b = "안녕하세요1"
            >
    </ApplicationSettings>
    <OtherStuff
