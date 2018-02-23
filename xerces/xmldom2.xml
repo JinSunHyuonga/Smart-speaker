@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<root>
+   <ApplicationSettings
+           option_a = "10"
+           option_b = "안녕하세요"
+           >
+   </ApplicationSettings>
+   <OtherStuff
+           option_x = "500"
+           >
+   </OtherStuff>
+</root>
+
+
