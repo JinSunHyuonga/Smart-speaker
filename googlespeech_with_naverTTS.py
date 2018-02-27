@@ -63,4 +63,4 @@ if __name__ == '__main__':
 	koreanTextToSpeech(unicode(input_kor_str))
 	
 	# 한글 음성 출력
-	os.system("mpg321 TTS.mp3") 	
+	os.system("omxplayer TTS.mp3") 	

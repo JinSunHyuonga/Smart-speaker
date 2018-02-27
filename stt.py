@@ -19,10 +19,9 @@ def google_stt():
     # 녹음
     #os.system("arecord -D plughw:1,0 -f S16_LE -c1 -r16000 -d 3 input.wav")
     #print("recording complete!")
-
 	# start stt
     speech_client = speech.Client()
-
+	
     with io.open('input.wav', 'rb') as audio_file:
         content = audio_file.read()
         audio_sample = speech_client.sample(

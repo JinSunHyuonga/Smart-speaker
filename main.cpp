@@ -1,16 +1,39 @@
 #include <iostream>
+#include <thread>
 #include <Python.h>
+#include <unistd.h>
+#include <stdlib.h>
+
 using namespace std;
 
+string google_string;
+int mutex = 0;
+int countdown_recoding = 0;
+int Interrup = 0;
 
-int main (int argc, char *const argv[])
-{
+void InteruptFunc()	{
+	while(1)	{
+		cin >> Interrup;
+		if (Interrup == 1)
+			google_string = "종료";
+	}
+}
+void CountFunc()	{
+	for(;countdown_recoding != 0;){
+		cout << countdown_recoding << endl;
+		countdown_recoding -= 1;
+		sleep(1);
+	}
+	cout << "counting thread end" << endl;
+}
+
+int SttFunc()	{
+	std::cout << "start stt" << std::endl;
+
 	PyObject *pName, *pModule;	//for load python script
 	PyObject *pgoogle_stt;	//for python functions
 	PyObject *g_pArgs, *g_pValue;	//for get/set python function parameters
-
 	Py_Initialize();
-
 	//start set path
 	PyObject *sys = PyImport_ImportModule("sys");
 	PyObject *path = PyObject_GetAttrString(sys, "path");
@@ -18,7 +41,7 @@ int main (int argc, char *const argv[])
 
 	//get python script
 	pName = PyString_FromString("stt");
-
+	cout << "stt init" << endl;
 	pModule = PyImport_Import(pName);
 	Py_DECREF(pName);
 	
@@ -33,14 +56,12 @@ int main (int argc, char *const argv[])
             std::cout << "Cannot find function 'google_stt'" << std::endl;
             return 1;
         }
-		std::cout << "start stt" << std::endl;			
-		system("./record_to_wav_level_check");
-		string google_string;
-		//pgoogle_stt : function without input/output
         g_pArgs = PyTuple_New(100); //make parameter list
 		g_pArgs = PyObject_CallObject(pgoogle_stt, NULL);
+		cout << "before stt API" << endl;
+		//google stt API
 		google_string = PyString_AsString(g_pArgs);
-		std::cout << "google_stt : " << google_string << std::endl;
+		cout << "after stt API" << endl;
 	}
 	else
 	{
@@ -48,7 +69,61 @@ int main (int argc, char *const argv[])
 		std::cout << "Failed to load 'hello'" << std::endl;
 		return 1;
 	}
-	
 	Py_Finalize();
+	return 0;
+}
+
+int SttFunc_repeat()    {
+    while(1)    {
+		if (countdown_recoding !=0)
+            sleep(10);
+        if (mutex == 0) {
+            cout << "main record start" << endl;
+            system("./record_to_wav_level_check");
+			//start google stt func
+	        SttFunc();
+
+			system("rm input.wav");
+            std::cout << "google_stt : " << google_string << std::endl;
+            mutex = 1;
+        }
+        if (mutex == 1) {
+        countdown_recoding = 10;
+        cout << "counting thread start" << endl;
+        thread t_countdonw_recoding(&CountFunc);
+        t_countdonw_recoding.detach();
+        }
+
+		if (google_string == "종료")
+            break;
+    }
+    return 0;
+}
+
+int main (int argc, char *const argv[])
+{
+	//interupt
+	thread t_interupt(&InteruptFunc);
+
+	// start Stt repeat
+	thread t_stt(&SttFunc_repeat);
+
+	//Text Parsing repeat
+	while(1)	{
+		if (google_string == "종료")
+			break;
+		if (mutex == 1)	{
+			//parsing
+			system("./parsing");
+			cout << google_string <<endl;
+			google_string = "";
+			//start API
+			//shm read
+			cout << "clear" <<endl;			
+			mutex = 0;
+		}
+	}
+
+	t_stt.join();
 	return 0;
 }
