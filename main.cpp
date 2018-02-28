@@ -16,6 +16,7 @@ void InteruptFunc()	{
 		cin >> Interrup;
 		if (Interrup == 1)
 			google_string = "종료";
+			break;
 	}
 }
 void CountFunc()	{
@@ -38,11 +39,12 @@ int SttFunc()	{
 	PyObject *sys = PyImport_ImportModule("sys");
 	PyObject *path = PyObject_GetAttrString(sys, "path");
 	PyList_Append(path, PyString_FromString("."));
-
+	
 	//get python script
 	pName = PyString_FromString("stt");
 	cout << "stt init" << endl;
 	pModule = PyImport_Import(pName);
+		cout << pModule << endl;
 	Py_DECREF(pName);
 	
 	if (pModule != NULL)
@@ -54,7 +56,6 @@ int SttFunc()	{
         {
             if (PyErr_Occurred()) PyErr_Print();
             std::cout << "Cannot find function 'google_stt'" << std::endl;
-            return 1;
         }
         g_pArgs = PyTuple_New(100); //make parameter list
 		g_pArgs = PyObject_CallObject(pgoogle_stt, NULL);
@@ -66,8 +67,7 @@ int SttFunc()	{
 	else
 	{
 		PyErr_Print();
-		std::cout << "Failed to load 'hello'" << std::endl;
-		return 1;
+		std::cout << "Failed to load 'pModules'" << std::endl;
 	}
 	Py_Finalize();
 	return 0;
@@ -76,19 +76,18 @@ int SttFunc()	{
 int SttFunc_repeat()    {
     while(1)    {
 		if (countdown_recoding !=0)
-            sleep(10);
+            sleep(5);
         if (mutex == 0) {
             cout << "main record start" << endl;
             system("./record_to_wav_level_check");
 			//start google stt func
 	        SttFunc();
-
 			system("rm input.wav");
             std::cout << "google_stt : " << google_string << std::endl;
             mutex = 1;
         }
         if (mutex == 1) {
-        countdown_recoding = 10;
+        countdown_recoding = 5;
         cout << "counting thread start" << endl;
         thread t_countdonw_recoding(&CountFunc);
         t_countdonw_recoding.detach();
@@ -124,6 +123,7 @@ int main (int argc, char *const argv[])
 		}
 	}
 
+	t_interupt.join();
 	t_stt.join();
 	return 0;
 }
