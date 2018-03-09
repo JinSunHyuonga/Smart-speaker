@@ -3,6 +3,12 @@
 #include <Python.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include <cstring>
+
+#include <sys/ipc.h> 
+#include <sys/shm.h> 
+
+#define SHM_KEY   0x12345 
 
 using namespace std;
 
@@ -99,24 +105,57 @@ int SttFunc_repeat()    {
     return 0;
 }
 
+struct SharedMemory {
+	string Stt_String;
+	string Stt_Function;
+	string Function_string;
+};
+
 int main (int argc, char *const argv[])
 {
 	//interupt
 	thread t_interupt(&InteruptFunc);
-
 	// start Stt repeat
 	thread t_stt(&SttFunc_repeat);
+	// make SHM
+	SharedMemory Share_String = {"1","2","3"};
+	cout << "shme1 : " << Share_String.Stt_String << endl;
+	cout << "shme2 : " << Share_String.Stt_Function << endl;
+	cout << "shme3 : " << Share_String.Function_string << endl;
+	int shmid;
+	struct SharedMemory *Point_SharedMemory;
+	void *shmmem = (void *)0;
 
+	shmid = shmget((key_t)SHM_KEY, sizeof(char)*100, 0666 |IPC_CREAT); 
+	if(shmid == -1) {
+		perror("shmget( )");
+		return -1; 
+	}   
+
+	shmmem = shmat(shmid, (void *)0, 0666 | IPC_CREAT);
+	if(shmmem == (void *)-1) {
+		perror("shmat( )");
+		return -1; 
+	}   
+	Point_SharedMemory = (struct SharedMemory *)shmmem;
+	cout << "main point_)SharedMemoty" << Point_SharedMemory <<endl;
 	//Text Parsing repeat
 	while(1)	{
 		if (google_string == "종료")
 			break;
 		if (mutex == 1)	{
+			//input SHM value
+			Share_String.Stt_String = google_string;
+			cout << "shme1 test : " << Share_String.Stt_String << endl;
+			memcpy(Point_SharedMemory,&Share_String,sizeof(SharedMemory));
 			//parsing
 			system("./parsing");
 			cout << google_string <<endl;
 			google_string = "";
 			//start API
+//			cout << "update shme1 : " << Point_SharedMemory.Stt_String << endl;
+//			cout << "uptade shme2 : " << Point_SharedMemory.Stt_Function << endl;
+//			cout << "uptade shme3 : " << Point_SharedMemory.Function_string << endl;
 			//shm read
 			cout << "clear" <<endl;			
 			mutex = 0;
