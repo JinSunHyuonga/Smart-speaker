@@ -3,61 +3,117 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <cstring>
+#include <string>
 
+#include <sys/types.h>
 #include <sys/ipc.h>
 #include <sys/shm.h>
 
 #define SHM_KEY   0x12345 
+#define MEMORY_SIZE 200
+
+#define PARSING "0"
+#define YOUTUBE "1"
+#define WEATHER "2"
+#define WEATHERg "g"
+#define WEATHERc "c"
+#define WEATHERj "j"
+#define WEATHERG "G"
+#define CALENDAR "3"
 
 using namespace std;
 
-string google_string;
-
-struct SharedMemory {
-    string Stt_String;
-    string Stt_Function;
-    string Function_string;
-};
-
 int main (int argc, char *const argv[])
 {
-    // make SHM
-    SharedMemory Share_String = {"p1","p2","p3"};
-    cout << "parsing shme1 : " << Share_String.Stt_String << endl;
-    cout << "parsing shme2 : " << Share_String.Stt_Function << endl;
-    cout << "parsing shme3 : " << Share_String.Function_string << endl;
-    int shmid;
-    struct SharedMemory *Point_SharedMemory;
-    void *shmmem = (void *)0;
+    int shmid, whileint=0;
+	char* Function;
+	char* String;
+	char* Sbuffer;
+	
+	string PyName = "파이";
 
-    shmid = shmget((key_t)SHM_KEY, sizeof(char)*100, 0666 | IPC_CREAT);
+	string Youtube0 = "틀어줘";
+	string Youtube1 = "노래";
+	string Youtube2 = "음악";
+	string Youtube3 = "들려줘";
+	string Youtube4 = "유튜브";
+	string Youtubef1 = "다음";
+	string Youtubef2 = "이전";
+
+	string Weather0 = "날씨";
+	string Weatherg = "경기";
+	string Weatherc = "충청";
+	string Weatherj = "전라";
+	string WeatherG = "경상";
+
+	string Stop0 = "멈춰";
+	string Stop1 = "그만";
+	string Stop2 = "정지";
+
+    shmid = shmget((key_t)SHM_KEY, 0, NULL);
     if(shmid == -1) {
-        perror("shmget( )");
+        perror("parsing shmget( )");
         return -1;
     }
 
-    shmmem = shmat(shmid, (void *)0, 0);
-    if(shmmem == (void *)-1) {
-        perror("shmat( )");
+    Function = (char*)shmat(shmid, NULL, 0);
+    if(Function == (void *)-1) {
+        perror("parsing shmat( )");
         return -1;
     }
-    Point_SharedMemory = (struct SharedMemory *)shmmem;
-	cout << "parsing shme1-1 : " << Point_SharedMemory->Stt_String << endl;
-    cout << "parsing shme1-2 : " << Point_SharedMemory->Stt_Function << endl;
-    cout << "parsing shme1-3 : " << Point_SharedMemory->Function_string << endl;
-		
-	memcpy(&Share_String,Point_SharedMemory,sizeof(SharedMemory));
 
-	cout << "piont_SharedMemoty" << Point_SharedMemory << endl;
+	String = Function + 1;
+	std::string Buffer(String);
 
-	cout << "parsing shme2-1 : " << Share_String.Stt_String << endl;
-    cout << "parsing shme2-2 : " << Share_String.Stt_Function << endl;
-    cout << "parsing shme2-3 : " << Share_String.Function_string << endl;
+	//pi serch
+	if( (Buffer.find(PyName) != string::npos) )
+	{
+		//YOUTUBE	strcpy(Function,YOUTUBE);
+		while(1)	{
+			if( (Buffer.find(Youtube0) != string::npos) )	{
+				strcpy(Function,YOUTUBE);
+				break;
+			}		
+			if( (Buffer.find(Youtube1) != string::npos) )   {
+    	        strcpy(Function,YOUTUBE);
+                break;
+        	}
+			if( (Buffer.find(Youtube2) != string::npos) )   {
+    	        strcpy(Function,YOUTUBE);
+                break;
+        	}
+			if( (Buffer.find(Youtube3) != string::npos) )   {
+    	        strcpy(Function,YOUTUBE);
+                break;
+        	}
+			if( (Buffer.find(Youtube4) != string::npos) )   {
+    	        strcpy(Function,YOUTUBE);
+                break;
+        	}
+		break;
+		}
+		//WEATHER	strcpy(Function,YOUTUBE);
+		if( (Buffer.find(Weather0) != string::npos) )   {
+            strcpy(Function,WEATHER);
+			if( (Buffer.find(Weatherg) != string::npos) )
+            strcpy(Function,WEATHERg);
+			if( (Buffer.find(Weatherc) != string::npos) )   
+            strcpy(Function,WEATHERc);
+			if( (Buffer.find(Weatherj) != string::npos) )   
+            strcpy(Function,WEATHERj);
+			if( (Buffer.find(WeatherG) != string::npos) )   
+            strcpy(Function,WEATHERG);
+        }
+	}
+	else	{
+		cout << "not found pi" << endl;
+		strcpy(Function,"9");
+	}
 
-	//input SHM value
-//    Share_String.Stt_String = google_string;
-//    cout << "shme1 test : " << Share_String.Stt_String << endl;
-    memcpy(Point_SharedMemory,&Share_String,sizeof(SharedMemory));
-
+	Sbuffer = strdup(Buffer.c_str());
+	strcpy(String,Sbuffer);
+	cout << "parsing Function : " << Function[0] << endl;
+	cout << "parsing String : " << String << endl;
+	cout << "parsing end " << endl;
     return 0;
 }
