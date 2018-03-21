@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*- 
 #!/usr/bin/python
+#!/usr/bin/env python
 
+import sys
 from apiclient.discovery import build
 from apiclient.errors import HttpError
 from oauth2client.tools import argparser
@@ -41,13 +43,21 @@ def youtube_search(options):
     elif search_result["id"]["kind"] == "youtube#playlist":
       playlists.append("%s (%s)" % (search_result["snippet"]["title"],
                                     search_result["id"]["playlistId"]))
+  f = open('youtube_feed.txt','w')
 
-  print "Videos:\n", "\n".join(videos), "\n"
-  print "Channels:\n", "\n".join(channels), "\n"
-  print "Playlists:\n", "\n".join(playlists), "\n"
+  f.write('\n'.join(videos).encode('utf-8'))
+#  print "Videos:\n", "\n".join(videos), "\n"
+#  print "Channels:\n", "\n".join(channels), "\n"
+#  print "Playlists:\n", "\n".join(playlists), "\n"
+  f.close()
 
 if __name__ == "__main__":
-  to_search = "가요"
+  f = open('youtube_search.txt','r')
+  s = f.readline()
+  to_search = s
+  print(s)
+  print(to_search)
+  f.close()
   argparser.add_argument("--q", help="Search term", default=to_search)
   argparser.add_argument("--max-results", help="Max results", default=25)
   args = argparser.parse_args()
