@@ -82,12 +82,11 @@ int SttFunc_repeat()    {
     while(1)    {
         if (mutex == 0) {
             cout << "main record start" << endl;
-//            system("./record_to_wav_level_check");
+            system("./record_to_wav_level_check");
 			//start google stt func
-//	        SttFunc();
-//			system("rm input.wav");
-			
-			google_string = "레미제라블 노래 틀어줘 파이야 ";
+	        SttFunc();
+			system("rm input.wav");			
+//			google_string = "레미제라블 노래 틀어줘 파이야 ";
             std::cout << "google_stt : " << google_string << std::endl;
 			
             mutex = 1;
@@ -109,8 +108,9 @@ int main (int argc, char *const argv[])
 	string YOUTUBEsearch;
 	string YOUTUBEfullURL;
 	string YOUTUBEpartURL;
-	char YOUTUBEomxplayer[1000];
-	int fornum = 0;
+	char YOUTUBEomxplayer[1500];
+	char YOUTUBEomxplayer2[1500];
+	int fornum = 0, YOUTUBEparsing1 = 0, YOUTUBEparsing2 = 0;
 	int YOUTUBEend;
 
 	shmid = shmget((key_t)SHM_KEY, (size_t)MEMORY_SIZE, 0777 | IPC_CREAT); 
@@ -135,7 +135,7 @@ int main (int argc, char *const argv[])
 	//Text Parsing repeat
 	while(1)	{
 		if (google_string == "종료")
-			break;
+		break;
 		if (mutex == 1)	{
 			cout << "Main Start PLZ" << endl;
 			//input SHM value
@@ -167,18 +167,21 @@ int main (int argc, char *const argv[])
 				if(YOUTUBEfile.fail())	{
 					cout << "File open Fail" << endl;
 				}
+
+				//play YOUTUBE Number
 //				while(!YOUTUBEfile.eof())	{
 					getline(YOUTUBEfile,YOUTUBEpartURL);
 //					cout << fornum << "YOUTUBEpartURL : " << YOUTUBEpartURL << endl;
 //					fornum++;
 //				}
-				YOUTUBEfile.close();
+				YOUTUBEfile.close();https://www.youtube.com/watch?v=RDtvoUZ4kD0
 				YOUTUBEend = YOUTUBEpartURL.length();
 				YOUTUBEpartURL = YOUTUBEpartURL.substr(YOUTUBEend-12,11);
 				YOUTUBEfullURL = YOUTUBEfullURL + YOUTUBEpartURL;
 				YOUTUBEfullURL = "sudo youtube-dl -g -f 18 " + YOUTUBEfullURL + " > youtube_omxplayer.txt";
 				strcpy(YOUTUBEomxplayer,YOUTUBEfullURL.c_str());
 				system(YOUTUBEomxplayer);
+
 				//YOUTUBE omxplayer Start
 				std::fstream YOUTUBEfile2("youtube_omxplayer.txt");
                 if(YOUTUBEfile2.fail())  {
@@ -186,29 +189,19 @@ int main (int argc, char *const argv[])
                 }
 				getline(YOUTUBEfile2,YOUTUBEfullURL);
 				YOUTUBEfile2.close();
-				system("omxplayer TTS.mp3");
-//				YOUTUBEfullURL = "omxplayer -b " + YOUTUBEfullURL;
-//				strcpy(YOUTUBEomxplayer,YOUTUBEfullURL.c_str());
-//				system(YOUTUBEomxplayer);
-//				system("./music_test.pyc");
-
-/*    Py_Initialize();
-    if (Py_IsInitialized())
-    {
-       import sys, os
-       f = open('youtube_omxplayer.txt','r')
-       url = f.readline()
-       f.close()
-       os.system('omxplayer '+url)   
-
-       char *str1 = "abc";
-       PyRun_SimpleString("print (\'Hello, Python!\')");
-       PyRun_SimpleString(str1);
-       Py_Finalize();
-    }*/
-
-				cout << "YOUTUBEfullURL OMXPLAY: " << YOUTUBEomxplayer << endl;
-			} 
+				YOUTUBEfullURL = "omxplayer -b " + YOUTUBEfullURL;
+				strcpy(YOUTUBEomxplayer2,YOUTUBEfullURL.c_str());
+					//omxplayer URL parsing
+				while(YOUTUBEomxplayer2[YOUTUBEparsing1])	{
+					if(strchr("?&=",YOUTUBEomxplayer2[YOUTUBEparsing1]))	{
+						YOUTUBEomxplayer[YOUTUBEparsing2++] = '\\';
+					}
+					YOUTUBEomxplayer[YOUTUBEparsing2++] = YOUTUBEomxplayer2[YOUTUBEparsing1++];
+				}
+				YOUTUBEomxplayer[YOUTUBEparsing2] = '\0';
+				YOUTUBEparsing1 = 0; YOUTUBEparsing2 = 0;
+				system(YOUTUBEomxplayer);
+			}
 			//shm read
 			cout << "clear" <<endl;			
 			mutex = 0;
