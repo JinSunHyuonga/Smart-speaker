@@ -293,6 +293,13 @@ int main (int argc, char *const argv[])
 				system("./naver_TTS.pyc");
 				system("omxplayer TTS.mp3");
 			}
+			if (strcmp(FunctionS.c_str(),"3") ==0)  {
+                cout << "Main Calinder start" <<endl;
+                system("python quickstart.py > weather_parsing.txt");
+                system("./naver_TTS.pyc");
+                system("omxplayer TTS.mp3");
+            }
+
 
 			//shm read
 			cout << "clear" <<endl;			
