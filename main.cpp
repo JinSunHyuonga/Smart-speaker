@@ -18,6 +18,10 @@
 #define PARSING "0"
 #define YOUTUBE "1"
 #define WEATHER "2"
+#define WEATHERg "g"
+#define WEATHERc "c"
+#define WEATHERj "j"
+#define WEATHERG "G"
 #define CALENDAR "3"
 
 using namespace std;
@@ -153,6 +157,7 @@ int SttFunc_repeat()    {
 				if (size > 30000)	{
 					break;
 				}
+				sleep(1);
 			}
 			//start google stt func
 //	        SttFunc();
@@ -282,6 +287,13 @@ int main (int argc, char *const argv[])
 				YOUTUBEparsing1 = 0; YOUTUBEparsing2 = 0;
 				system(YOUTUBEomxplayer);
 			}
+			 if (strcmp(FunctionS.c_str(),"2") ==0 || strcmp(FunctionS.c_str(),"g") ==0 || strcmp(FunctionS.c_str(),"c") ==0 || strcmp(FunctionS.c_str(),"j") ==0 || strcmp(FunctionS.c_str(),"G") ==0 )  {
+                cout << "Main Weather start" <<endl;
+				system("./xerces/weatherxml > weather_parsing.txt");
+				system("./naver_TTS.pyc");
+				system("omxplayer TTS.mp3");
+			}
+
 			//shm read
 			cout << "clear" <<endl;			
 			mutex = 0;

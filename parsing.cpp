@@ -30,7 +30,7 @@ int main (int argc, char *const argv[])
 	char* String;
 	char* Sbuffer;
 	
-	string PyName = "파이";
+	string PyName = "마카오";
 
 	string Youtube0 = "틀어줘";
 	string Youtube1 = "노래";
