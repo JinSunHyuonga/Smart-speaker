@@ -3,7 +3,7 @@
 #include <string>
 #include <string.h>
 #include <fstream>
-#include <python2.7/Python.h>
+#include <Python.h>
 #include <unistd.h>
 #include <stdlib.h>
 #include <cstring>
@@ -27,74 +27,13 @@ int mutex = 0;
 int countdown_recoding = 0;
 int Interrup = 0;
 
-class SttHandle
-{
-		private:
-	PyObject *pName, *pModule;	//for load python script
-	PyObject *pgoogle_stt;	//for python functions
-	PyObject *g_pArgs, *g_pValue;	//for get/set python function parameters
-	PyObject *sys;
-	PyObject *path;
-
-		public:
-	SttHandle()
-	{
-			Py_Initialize();
-			sys = PyImport_ImportModule("sys");
-			path = PyObject_GetAttrString(sys, "path");
-			PyList_Append(path, PyString_FromString("."));
-
-			pName = PyString_FromString("stt");
-			pModule = PyImport_Import(pName);
-			Py_DECREF(pName);
+void InteruptFunc()	{
+	while(1)	{
+		cin >> Interrup;
+		if (Interrup == 1)
+			google_string = "종료";
 	}
-			
-	~SttHandle()
-	{
-		/*	Py_Finalize();
-
-			sys = NULL;
-			path = NULL;
-			PyList_Append(NULL, NULL);
-
-			pName = NULL;
-			pModule = NULL;
-			Py_DECREF(NULL);
-
-			pgoogle_stt = NULL;
-			g_pArgs = NULL;
-			g_pValue =NULL;
-
-			Py_Finalize(); */
-	}
-
-	void pModule_ggl_stt(void)
-	{
-		if (pModule != NULL)
-		{
-			//module load
-			pgoogle_stt = PyObject_GetAttrString(pModule, "google_stt");	
-
-			//module load error check
-    	    if ( !(pgoogle_stt && PyCallable_Check(pgoogle_stt)) )
-    	    {
-    	        if (PyErr_Occurred()) PyErr_Print();
-    	        std::cout << "Cannot find function 'google_stt'" << std::endl;
-    	    }
-    	    g_pArgs = PyTuple_New(100); //make parameter list
-			g_pArgs = PyObject_CallObject(pgoogle_stt, NULL);
-			cout << "before stt API" << endl;
-			//google stt API
-			google_string = PyString_AsString(g_pArgs);
-			cout << "after stt API" << endl;
-		}
-		else
-		{
-			PyErr_Print();
-			std::cout << "Failed to load 'pModules'" << std::endl;
-		}
-	}
-};
+}
 
 int SttFunc()	{
 	std::cout << "start stt" << std::endl;
@@ -140,31 +79,12 @@ int SttFunc()	{
 }
 
 int SttFunc_repeat()    {
-	struct stat buf;
-	long long size;
     while(1)    {
         if (mutex == 0) {
-            cout << "main reciord start" << endl;
-			while(1)	{
-	            system("./record_to_wav_level_check");
-				stat("input.wav", &buf);
-				size = (long long)buf.st_size;
-				std::cout << "audio Size : " << size << std::endl;
-				if (size > 30000)	{
-					break;
-				}
-			}
+            cout << "main record start" << endl;
+            system("./record_to_wav_level_check");
 			//start google stt func
-//	        SttFunc();
-
-//using class
-
-			SttHandle *stt_ptr = new SttHandle;
-			stt_ptr->pModule_ggl_stt();
-			delete stt_ptr;
-
-//using class
-
+	        SttFunc();
 			system("rm input.wav");			
 //			google_string = "레미제라블 노래 틀어줘 파이야 ";
             std::cout << "google_stt : " << google_string << std::endl;
@@ -188,8 +108,8 @@ int main (int argc, char *const argv[])
 	string YOUTUBEsearch;
 	string YOUTUBEfullURL;
 	string YOUTUBEpartURL;
-	char YOUTUBEomxplayer[1000];
-	char YOUTUBEomxplayer2[1000];
+	char YOUTUBEomxplayer[1500];
+	char YOUTUBEomxplayer2[1500];
 	int fornum = 0, YOUTUBEparsing1 = 0, YOUTUBEparsing2 = 0;
 	int YOUTUBEend;
 
