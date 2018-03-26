@@ -34,7 +34,8 @@ if __name__ == '__main__':
     sys.setdefaultencoding('utf-8')
 
     # 한글 TTS
-    f = open('weather_parsing.txt','r')
-    input_kor_str = f.readline()
-    f.close()
+#    f = open('weather_parsing.txt','r')
+#    input_kor_str = f.readline()
+#    f.close()
+    input_kor_str = "실행 기능이 없어요."
     koreanTextToSpeech(unicode(input_kor_str))
