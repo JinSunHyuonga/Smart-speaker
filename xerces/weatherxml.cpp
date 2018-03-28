@@ -4,6 +4,8 @@
 #include <stdexcept>
 #include <list>
  
+#include <sys/ipc.h>
+#include <sys/shm.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
@@ -11,6 +13,18 @@
 #include <stdlib.h>
 #include "weatherparser.hpp"
 #include <fstream>
+
+#define SHM_KEY   0x12345 
+#define MEMORY_SIZE 200
+
+#define PARSING "0"
+#define YOUTUBE "1"
+#define WEATHER "2"
+#define WEATHERg "g"
+#define WEATHERc "c"
+#define WEATHERj "j"
+#define WEATHERG "G"
+#define CALENDAR "3"
 
 using namespace xercesc;
 using namespace std;
@@ -162,11 +176,20 @@ void GetConfig::readConfigFile(string& configFile)
 	DOMNode* currentNode = dataChildren->item(5) ;
 	char* NodeValue ;
 	NodeValue = XMLString::transcode(currentNode->getTextContent());
-	cout << "temp = " << NodeValue << endl;
+	cout << "현재기온은 " << NodeValue ;
 
 	currentNode = dataChildren->item(15) ;
 	NodeValue = XMLString::transcode (currentNode->getTextContent());
-	cout << "wfKor = " << NodeValue << endl;
+	cout << "입니다, 하늘상태는 " << NodeValue ;
+
+	currentNode = dataChildren->item(19) ;
+    NodeValue = XMLString::transcode (currentNode->getTextContent());
+    cout << "입니다, 강수확률은 " << NodeValue ;
+
+	currentNode = dataChildren->item(25) ;
+    NodeValue = XMLString::transcode (currentNode->getTextContent());
+    cout << "%입니다, 풍속은  " << NodeValue << "입니다" << endl;
+
 
    }
    catch( xercesc::XMLException& e )
@@ -180,12 +203,49 @@ void GetConfig::readConfigFile(string& configFile)
  
 int main()
 {
-//   system("DOMPrint \"http://www.weather.go.kr/wid/queryDFSRSS.jsp?zone=1168066000\" > test_data.xml");// stat file. Get ambigious segfault otherwise.
+    int shmid;
+    char* Function;
+    char* String;
+	string FunctionS;
 
-   string configFile = "test_data.xml";
+	shmid = shmget((key_t)SHM_KEY, 0, NULL);
+    if(shmid == -1) {
+        perror("parsing shmget( )");
+        return -1;
+    }
+
+    Function = (char*)shmat(shmid, NULL, 0);
+    if(Function == (void *)-1) {
+        perror("parsing shmat( )");
+        return -1;
+    }
+
+    String = Function + 1;
+    std::string Buffer(String);
+	FunctionS = Function;
+	FunctionS.erase(1);
+	if (strcmp(FunctionS.c_str(),"2") ==0 )  {
+	system("DOMPrint \"http://www.weather.go.kr/wid/queryDFSRSS.jsp?zone=1168066000\" > xerces/test_data.xml");
+	}
+	if (strcmp(FunctionS.c_str(),"g") ==0 )  {
+    system("DOMPrint \"http://www.weather.go.kr/wid/queryDFSRSS.jsp?zone=4182025000\" > xerces/test_data.xml");
+    }
+	if (strcmp(FunctionS.c_str(),"c") ==0 )  {
+    system("DOMPrint \"http://www.weather.go.kr/wid/queryDFSRSS.jsp?zone=4425051000\" > xerces/test_data.xml");
+    }
+	if (strcmp(FunctionS.c_str(),"j") ==0 )  {
+    system("DOMPrint \"http://www.weather.go.kr/wid/queryDFSRSS.jsp?zone=4681025000\" > xerces/test_data.xml");
+    }
+	if (strcmp(FunctionS.c_str(),"G") ==0 )  {
+    system("DOMPrint \"http://www.weather.go.kr/wid/queryDFSRSS.jsp?zone=4831034000\" > xerces/test_data.xml");
+    }
+
+
+   string configFile = "xerces/test_data.xml";
 
    GetConfig appConfig;
    appConfig.readConfigFile(configFile);
-	cout << "end" << endl; 
+//	cout << "end" << endl; 
    return 0;
 }
+

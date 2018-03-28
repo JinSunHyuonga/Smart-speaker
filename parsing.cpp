@@ -30,7 +30,8 @@ int main (int argc, char *const argv[])
 	char* String;
 	char* Sbuffer;
 	
-	string PyName = "파이";
+	string PyName = "마카오";
+	string PyName0 = "카카오";
 
 	string Youtube0 = "틀어줘";
 	string Youtube1 = "노래";
@@ -50,6 +51,9 @@ int main (int argc, char *const argv[])
 	string Stop1 = "그만";
 	string Stop2 = "정지";
 
+	string CalendarK = "일정";
+	string CalendarE = "캘린더";
+
     shmid = shmget((key_t)SHM_KEY, 0, NULL);
     if(shmid == -1) {
         perror("parsing shmget( )");
@@ -66,7 +70,7 @@ int main (int argc, char *const argv[])
 	std::string Buffer(String);
 
 	//pi serch
-	if( (Buffer.find(PyName) != string::npos) )
+	if( (Buffer.find(PyName) != string::npos) || (Buffer.find(PyName0) != string::npos))
 	{
 		//YOUTUBE	strcpy(Function,YOUTUBE);
 		while(1)	{
@@ -104,6 +108,14 @@ int main (int argc, char *const argv[])
 			if( (Buffer.find(WeatherG) != string::npos) )   
             strcpy(Function,WEATHERG);
         }
+		
+	    if( (Buffer.find(CalendarK) != string::npos) )   {
+    	    strcpy(Function,CALENDAR);
+	    }
+	    if( (Buffer.find(CalendarE) != string::npos) ){
+	        strcpy(Function,CALENDAR);
+	    }
+
 	}
 	else	{
 		cout << "not found pi" << endl;

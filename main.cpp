@@ -18,6 +18,10 @@
 #define PARSING "0"
 #define YOUTUBE "1"
 #define WEATHER "2"
+#define WEATHERg "g"
+#define WEATHERc "c"
+#define WEATHERj "j"
+#define WEATHERG "G"
 #define CALENDAR "3"
 
 using namespace std;
@@ -153,6 +157,7 @@ int SttFunc_repeat()    {
 				if (size > 30000)	{
 					break;
 				}
+				sleep(1);
 			}
 			//start google stt func
 //	        SttFunc();
@@ -217,6 +222,7 @@ int main (int argc, char *const argv[])
 		if (google_string == "종료")
 		break;
 		if (mutex == 1)	{
+			system("omxplayer ./speak/TTSstart.mp3");
 			cout << "Main Start PLZ" << endl;
 			//input SHM value
 			cout << "Function : " << Function[0] << endl;
@@ -236,7 +242,8 @@ int main (int argc, char *const argv[])
 			//start YOUTUBE
 			if (strcmp(FunctionS.c_str(),"1") ==0 )  {
 				cout << "Main Youtube start" <<endl;
-				
+				system("omxplayer ./speak/TTSyoutube.mp3");
+
 				ofstream outFile("youtube_search.txt");
 				outFile << YOUTUBEsearch << endl;
 				outFile.close();
@@ -282,6 +289,22 @@ int main (int argc, char *const argv[])
 				YOUTUBEparsing1 = 0; YOUTUBEparsing2 = 0;
 				system(YOUTUBEomxplayer);
 			}
+			else if (strcmp(FunctionS.c_str(),"2") ==0 || strcmp(FunctionS.c_str(),"g") ==0 || strcmp(FunctionS.c_str(),"c") ==0 || strcmp(FunctionS.c_str(),"j") ==0 || strcmp(FunctionS.c_str(),"G") ==0 )  {
+                cout << "Main Weather start" <<endl;
+				system("./xerces/weatherxml > weather_parsing.txt");
+				system("./naver_TTS.pyc");
+				system("omxplayer TTS.mp3");
+			}
+			else if (strcmp(FunctionS.c_str(),"3") ==0)  {
+                cout << "Main Calinder start" <<endl;
+                system("python quickstart.py > weather_parsing.txt");
+                system("./naver_TTS.pyc");
+                system("omxplayer TTS.mp3");
+            }
+			else
+				system("omxplayer ./speak/TTSnofunc.mp3");
+
+
 			//shm read
 			cout << "clear" <<endl;			
 			mutex = 0;
