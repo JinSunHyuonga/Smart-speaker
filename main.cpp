@@ -98,7 +98,7 @@ class SttHandle
 			google_string = PyString_AsString(g_pArgs);
 			cout << "after stt API" << endl;
 		}
-		else
+		else 
 		{
 			PyErr_Print();
 			std::cout << "Failed to load 'pModules'" << std::endl;
@@ -106,6 +106,9 @@ class SttHandle
 	}
 };
 
+// ==============================
+// 음성 -> 텍스트 변환
+// ==============================
 int SttFunc()	{
 	std::cout << "start stt" << std::endl;
 
@@ -181,7 +184,7 @@ int SttFunc_repeat()    {
 //using class
 
 			system("rm input.wav");		// 생성했던 녹음 파일을 삭제
-//			google_string = "레미제라블 노래 틀어줘 파이야 ";
+			//google_string = "레미제라블 노래 틀어줘 파이야 ";
             std::cout << "google_stt : " << google_string << std::endl;
 			
             mutex = 1;
@@ -315,17 +318,17 @@ int main (int argc, char *const argv[])
 				YOUTUBEparsing1 = 0; YOUTUBEparsing2 = 0;
 				system(YOUTUBEomxplayer);
 			}
-			else if (strcmp(FunctionS.c_str(),"2") ==0 || strcmp(FunctionS.c_str(),"g") ==0 || strcmp(FunctionS.c_str(),"c") ==0 || strcmp(FunctionS.c_str(),"j") ==0 || strcmp(FunctionS.c_str(),"G") ==0 )  {
-                cout << "Main Weather start" <<endl;
+			else if (strcmp(FunctionS.c_str(),"2") ==0 || strcmp(FunctionS.c_str(),"g") ==0 || strcmp(FunctionS.c_str(),"c") ==0 || strcmp(FunctionS.c_str(),"j") ==0 || strcmp(FunctionS.c_str(),"G") ==0 )  { // 날씨 확인
+                cout << "Main Weather start" <<endl; 
 				system("./xerces/weatherxml > weather_parsing.txt");
 				system("./naver_TTS.pyc");
 				system("omxplayer TTS.mp3");
 			}
-			else if (strcmp(FunctionS.c_str(),"3") ==0)  {
+			else if (strcmp(FunctionS.c_str(),"3") ==0)  { // 일정 확인
                 cout << "Main Calinder start" <<endl;
-                system("python quickstart.py > weather_parsing.txt");
-                system("./naver_TTS.pyc");
-                system("omxplayer TTS.mp3");
+                system("python quickstart.py > weather_parsing.txt"); // python을 이용해 일정 내용을 확인, 텍스트파일로 저장
+                system("./naver_TTS.pyc"); // naver TTS api를 이용하여 음성으로 변환
+                system("omxplayer TTS.mp3");  
             }
 			else
 				system("omxplayer ./speak/TTSnofunc.mp3");
@@ -337,8 +340,8 @@ int main (int argc, char *const argv[])
 		}
 	}
 
-	shmctl(shmid, IPC_RMID, 0);
+	shmctl(shmid, IPC_RMID, 0); // 공유메모리 제거
 //	t_interupt.join();
-	t_stt.join();
+	t_stt.join(); // thread를 실행한 녹음 기능을 마무리
 	return 0;
 }
