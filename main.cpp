@@ -33,6 +33,9 @@ int Interrup = 0;
 
 class SttHandle
 {
+	// ===================================
+	// python embedding을 위한 변수 선언
+	// ===================================
 		private:
 	PyObject *pName, *pModule;	//for load python script
 	PyObject *pgoogle_stt;	//for python functions
@@ -41,6 +44,9 @@ class SttHandle
 	PyObject *path;
 
 		public:
+	// ================================================
+	// 생성자에서 python embedding을 위한 변수초기화 
+	// ================================================
 	SttHandle()
 	{
 			Py_Initialize();
@@ -186,7 +192,10 @@ int SttFunc_repeat()    {
 
 int main (int argc, char *const argv[])
 {
-	int shmid, Fornum;
+	// ==============================================
+	// 변수 선언
+	// ==============================================
+	int shmid, Fornum; // 공유메모리를 사용을 위한 변수선언
 	char *Function;
 	char *String;
 	string FunctionS;
@@ -198,12 +207,18 @@ int main (int argc, char *const argv[])
 	int fornum = 0, YOUTUBEparsing1 = 0, YOUTUBEparsing2 = 0;
 	int YOUTUBEend;
 
+	// ==============================================
+	// 공유메모리 생성
+	// ==============================================
 	shmid = shmget((key_t)SHM_KEY, (size_t)MEMORY_SIZE, 0777 | IPC_CREAT); 
 	if(shmid == -1) {
 		perror("shmget( )");
 		return -1; 
-	}   
+	} 
 
+	// ==============================================
+	// 생성된 공유메모리를 프로세스에 첨부
+	// ==============================================
 	Function = (char*)shmat(shmid, NULL, 0);
 	if(Function == (void *)-1) {
 		perror("shmat( )");
