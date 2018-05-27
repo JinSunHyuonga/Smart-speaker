@@ -82,7 +82,7 @@ class SttHandle
 	{
 		if (pModule != NULL)
 		{
-			//module load
+			// python module load
 			pgoogle_stt = PyObject_GetAttrString(pModule, "google_stt");	
 
 			//module load error check
@@ -149,18 +149,22 @@ int SttFunc()	{
 	return 0;
 }
 
+
+// ==============================================
+// 마이크를 통하여 생성된 녹음파일 체크 
+// ==============================================
 int SttFunc_repeat()    {
-	struct stat buf;
+	struct stat buf; // 파일의 상태를 확인하기 위해 stat 구조체 생성
 	long long size;
     while(1)    {
         if (mutex == 0) {
             cout << "main reciord start" << endl;
 			while(1)	{
-	            system("./record_to_wav_level_check");
-				stat("input.wav", &buf);
-				size = (long long)buf.st_size;
+	            system("./record_to_wav_level_check"); // system함수를 이용, 마이크를 통한 음성을 녹음 기능을 실행 후 녹음파일 생성
+				stat("input.wav", &buf);	// stat()함수를 이용하여 파일의 상태를 체크
+				size = (long long)buf.st_size;	// struct stat의 st_size멤버를 통해 파일 크기를 확인
 				std::cout << "audio Size : " << size << std::endl;
-				if (size > 30000)	{
+				if (size > 30000)	{ // 녹음된 파일의 크기가 30Mbyte 보다 클경우 녹음 중지
 					break;
 				}
 				sleep(1);
@@ -176,7 +180,7 @@ int SttFunc_repeat()    {
 
 //using class
 
-			system("rm input.wav");			
+			system("rm input.wav");		// 생성했던 녹음 파일을 삭제
 //			google_string = "레미제라블 노래 틀어줘 파이야 ";
             std::cout << "google_stt : " << google_string << std::endl;
 			
@@ -190,6 +194,10 @@ int SttFunc_repeat()    {
     return 0;
 }
 
+	
+// ==============================================
+// main 시작
+// ==============================================
 int main (int argc, char *const argv[])
 {
 	// ==============================================
@@ -230,6 +238,9 @@ int main (int argc, char *const argv[])
 	//interupt
 //    thread t_interupt(&InteruptFunc);
     // start Stt repeat
+	// ==============================================
+	// 음성인식기능을 위한 thread 생성 : 함수 선언(152)
+	// ==============================================
     thread t_stt(&SttFunc_repeat);
 
 	//Text Parsing repeat
@@ -237,7 +248,7 @@ int main (int argc, char *const argv[])
 		if (google_string == "종료")
 		break;
 		if (mutex == 1)	{
-			system("omxplayer ./speak/TTSstart.mp3");
+			system("omxplayer ./speak/TTSstart.mp3"); // 녹음이 완료된것을 omxplayer를 통해 스피커로 출력
 			cout << "Main Start PLZ" << endl;
 			//input SHM value
 			cout << "Function : " << Function[0] << endl;
