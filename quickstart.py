@@ -42,7 +42,7 @@ Dbug = False
 # at ~/.credentials/calendar-python-quickstart.json
 SCOPES = 'https://www.googleapis.com/auth/calendar.readonly' 
 #CLIENT_SECRET_FILE = '/media/ark/sub/smartmirror/calendar/quick_google/calendar_key.json'
-CLIENT_SECRET_FILE = './master_key.json'    # api사용시 
+CLIENT_SECRET_FILE = './master_key.json'
 APPLICATION_NAME = 'Google Calendar API Python Quickstart'
 
 # =================================================
@@ -121,7 +121,6 @@ def get_calendar_info():
 
 # =================================================
 # calendar standard time the day event  get
-# 당일 일정 확인
 # =================================================
 def get_eventTodayList_standnowtime():
 
@@ -132,11 +131,12 @@ def get_eventTodayList_standnowtime():
     page_token = None
     event_mintime = datetime.datetime.today().isoformat() + 'Z' # 'Z' indicates UTC time
 
-    # list 타입을 string타입으로 변환
-    theday_list = datetime.date.today().strftime("%Y-%m-%d").split('-') # result type list
-    theday = "-".join(theday_list)  # cobverting list -> string 
+    # result type list
+    theday_list = datetime.date.today().strftime("%Y-%m-%d").split('-') 
+    # cobverting list -> string
+    theday = "-".join(theday_list)   
 
-    # 당일 전체 일정을 가져오기 위한 시간 설정
+    # time format
     event_mintime = theday+"T00:00:00Z"
     event_maxtime = theday+"T23:59:59Z"
 
@@ -158,7 +158,7 @@ def get_eventTodayList_standnowtime():
     if not events:
         print('No upcoming events found')
     for event in events:
-        # json 타입으로 반환된 결과 값에서 날짜와 일정이름만 출력되도록 설정
+        # retrun type - json 
         start = event['start'].get('dateTime',event['start'].get('date'))
         print(start, event['summary'])
 
