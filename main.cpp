@@ -167,7 +167,7 @@ int SttFunc_repeat()    {
 				stat("input.wav", &buf);	// stat()함수를 이용하여 파일의 상태를 체크
 				size = (long long)buf.st_size;	// struct stat의 st_size멤버를 통해 파일 크기를 확인
 				std::cout << "audio Size : " << size << std::endl;
-				if (size > 30000)	{ // 녹음된 파일의 크기가 30Mbyte 보다 클경우 녹음 중지
+				if (size > 30000)	{ // 녹음된 파일의 크기가 30kbyte 보다 클경우 녹음 중지
 					break;
 				}
 				sleep(1);
