@@ -12,14 +12,14 @@ from google.cloud.speech import types
 def google_stt():
     """Transcribe the given audio file."""
 
-    # 환경 변수 설정
+    # 환경 변수 설정, Oauth인증에서 사용할 키파일의 경로를 저장
     os.system("export GOOGLE_APPLICATION_CREDENTIALS=/home/pi/project/work/fork/Smart-speaker/master_key.json")
 
     # 인코딩 설정
     reload(sys)
     sys.setdefaultencoding('utf-8')
 
-    # 녹음
+    # 녹음, 완료후 input.wav 파일 생성. 1채널, S16_LE, 3초간 녹음
     os.system("arecord -D plughw:1,0 -f S16_LE -c1 -r16000 -d 3 input.wav")
     #print("recording complete!")
 
@@ -31,6 +31,7 @@ def google_stt():
         content = audio_file.read()
         audio = types.RecognitionAudio(content=content)
 
+    # 오디오 파일 설정 부분
     config = types.RecognitionConfig(
             encoding = enums.RecognitionConfig.AudioEncoding.LINEAR16,
             sample_rate_hertz = 16000,

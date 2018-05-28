@@ -108,6 +108,7 @@ class SttHandle
 
 // ==============================
 // 음성 -> 텍스트 변환
+// python embedding
 // ==============================
 int SttFunc()	{
 	std::cout << "start stt" << std::endl;
@@ -155,6 +156,7 @@ int SttFunc()	{
 
 // ==============================================
 // 마이크를 통하여 생성된 녹음파일 체크 
+// thread에서 실행하는 함수
 // ==============================================
 int SttFunc_repeat()    {
 	struct stat buf; // 파일의 상태를 확인하기 위해 stat 구조체 생성
@@ -206,7 +208,8 @@ int main (int argc, char *const argv[])
 	// ==============================================
 	// 변수 선언
 	// ==============================================
-	int shmid, Fornum; // 공유메모리를 사용을 위한 변수선언
+	int shmid; // 공유메모리를 사용을 위한 변수선언
+//	int Fornum; 
 	char *Function;
 	char *String;
 	string FunctionS;
@@ -240,7 +243,7 @@ int main (int argc, char *const argv[])
 
 	//interupt
 //    thread t_interupt(&InteruptFunc);
-    // start Stt repeat
+//    start Stt repeat
 	// ==============================================
 	// 음성인식기능을 위한 thread 생성 : 함수 선언(152)
 	// ==============================================
@@ -250,11 +253,12 @@ int main (int argc, char *const argv[])
 	while(1)	{
 		if (google_string == "종료")
 		break;
-		if (mutex == 1)	{
+		if (mutex == 1)	
+		{
 			system("omxplayer ./speak/TTSstart.mp3"); // 녹음이 완료된것을 omxplayer를 통해 스피커로 출력
 			cout << "Main Start PLZ" << endl;
 			//input SHM value
-			cout << "Function : " << Function[0] << endl;
+			cout << "Function : " << Function[0] << endl;	// 공유메모리에 첫번째에 기능 함수를 확인
             cout << "String : " << String << endl;
 			strcpy(Function,PARSING);
 			strcpy(String,google_string);
@@ -269,7 +273,8 @@ int main (int argc, char *const argv[])
 			cout << "Main FunctionS : " << FunctionS <<endl;
 
 			//start YOUTUBE
-			if (strcmp(FunctionS.c_str(),"1") ==0 )  {
+			if (strcmp(FunctionS.c_str(),"1") ==0 )  
+			{
 				cout << "Main Youtube start" <<endl;
 				system("omxplayer ./speak/TTSyoutube.mp3");
 
@@ -318,19 +323,21 @@ int main (int argc, char *const argv[])
 				YOUTUBEparsing1 = 0; YOUTUBEparsing2 = 0;
 				system(YOUTUBEomxplayer);
 			}
-			else if (strcmp(FunctionS.c_str(),"2") ==0 || strcmp(FunctionS.c_str(),"g") ==0 || strcmp(FunctionS.c_str(),"c") ==0 || strcmp(FunctionS.c_str(),"j") ==0 || strcmp(FunctionS.c_str(),"G") ==0 )  { // 날씨 확인
+			else if (strcmp(FunctionS.c_str(),"2") ==0 || strcmp(FunctionS.c_str(),"g") ==0 || strcmp(FunctionS.c_str(),"c") ==0 || strcmp(FunctionS.c_str(),"j") ==0 || strcmp(FunctionS.c_str(),"G") ==0 ) // 날씨 확인
+		   	{ 
                 cout << "Main Weather start" <<endl; 
-				system("./xerces/weatherxml > weather_parsing.txt");
-				system("./naver_TTS.pyc");
+				system("./xerces/weatherxml > weather_parsing.txt"); // 파싱한 xml 날씨정보를 텍스트파일로 저장.
+				system("./naver_TTS.pyc");	// TTS api를 이용하여 음성으로 변환.
 				system("omxplayer TTS.mp3");
 			}
-			else if (strcmp(FunctionS.c_str(),"3") ==0)  { // 일정 확인
+			else if (strcmp(FunctionS.c_str(),"3") ==0)  // 일정 확인.
+			{ 
                 cout << "Main Calinder start" <<endl;
-                system("python quickstart.py > weather_parsing.txt"); // python을 이용해 일정 내용을 확인, 텍스트파일로 저장
-                system("./naver_TTS.pyc"); // naver TTS api를 이용하여 음성으로 변환
-                system("omxplayer TTS.mp3");  
+                system("python quickstart.py > weather_parsing.txt"); // python을 이용해 일정 내용을 확인, 텍스트파일로 저장.
+                system("./naver_TTS.pyc"); // naver TTS api를 이용하여 음성으로 변환.
+                system("omxplayer TTS.mp3");  // omxplayer를 이용하여 일정내용 출력.
             }
-			else
+			else // 없는 기능
 				system("omxplayer ./speak/TTSnofunc.mp3");
 
 
