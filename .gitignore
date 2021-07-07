@@ -1,0 +1,7 @@
+*.json
+*.swo
+*.swp
+master_key.json
+*.pyc
+
+example
